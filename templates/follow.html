@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Посты любимых авторов{% endblock %}
+{% block header %}Посты любимых авторов{% endblock %}
+{% block content %}
+    <main role="main" class="container">
+        {% include "includes/menu.html" with follow=True %}
+        <div class="col-md-9">
+            {% load cache %}
+            {% cache 20 index page %}
+                {% for post in page %}
+                    {% include 'includes/post_card.html' with post=post%}
+                {% endfor %}
+            {% endcache %}
+            {% if page.has_other_pages %}
+                {% include 'includes/paginator.html' with items=page paginator=paginator%}
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}
