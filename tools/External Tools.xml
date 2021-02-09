@@ -1,0 +1,14 @@
+<toolSet name="External Tools">
+  <tool name="Flake8" description="Flake8 for pycharm settings" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="true" showConsoleOnStdErr="false" synchronizeAfterRun="true">
+    <exec>
+      <option name="COMMAND" value="C:\Dev\hw04_tests\venv\Scripts\flake8.exe" />
+      <option name="PARAMETERS" value="$FilePath$" />
+      <option name="WORKING_DIRECTORY" value="C:/Dev/hw04_tests" />
+    </exec>
+    <filter>
+      <option name="NAME" value="No name" />
+      <option name="DESCRIPTION" />
+      <option name="REGEXP" value="$FILE_PATH$:$LINE$ $MESSAGE$" />
+    </filter>
+  </tool>
+</toolSet>

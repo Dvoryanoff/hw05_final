@@ -1,0 +1,33 @@
+<templateSet group="Python">
+  <template name="asd" value="print('TEST')" description="print test" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="lt" value="self.setLayout(QVBoxLayout())&#10;self.layout().setContentsMargins(QMargins())&#10;self.layout().setSpacing(0)&#10;self.layout().setAlignment(Qt.AlignLeft | Qt.AlignTop)" description="" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="Python_Class" value="true" />
+    </context>
+  </template>
+  <template name="fx" value="# FIXME" description="" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="td" value="# TODO " description="" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="reg" value="# region $regionName$&#10;&#10;# endregion" shortcut="ENTER" description="Insert #region" toReformat="false" toShortenFQNames="true">
+    <variable name="regionName" expression="" defaultValue="Name" alwaysStopAt="true" />
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="===" value="print('=' * 50)" shortcut="ENTER" description="" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+</templateSet>
