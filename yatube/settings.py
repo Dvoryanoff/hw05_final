@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'about',
     'sorl.thumbnail',
     'users',
     'posts',
@@ -44,8 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
-    'django.contrib.flatpages'
+    # 'django.contrib.sites',
+    # 'django.contrib.flatpages'
 ]
 
 SITE_ID = 1
@@ -163,8 +164,7 @@ LOGIN_URL = "/auth/login/"
 LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"
 
-PAGINATOR_PAGE_SIZE = 10
-
+PAGINATOR_PAGE_SIZE = 5
 
 #  подключаем движок filebased.EmailBackend
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"

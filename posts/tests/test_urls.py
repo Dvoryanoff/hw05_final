@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.contrib.flatpages.models import FlatPage, Site
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -31,30 +30,12 @@ class PostURLTests(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user1)
 
-        site = Site.objects.get(pk=1)
-
-        self.flat_about = FlatPage.objects.create(
-            url=reverse('about-author'),
-            title='about me',
-            content='<b>some content</b>')
-
-        self.flat_spec = FlatPage.objects.create(
-            url=reverse('about-spec'),
-            title='about me',
-            content='<b>some content</b>'
-        )
-
-        self.flat_about.sites.add(site)
-        self.flat_spec.sites.add(site)
-
     def test_non_authorized_guest_urls_exist(self):
 
         """Проверка доступности общедоступных страниц для
         неавторизованного пользователя."""
 
         pages = (reverse('index'),
-                 reverse('about-author'),
-                 reverse('about-spec'),
                  reverse('profile',
                          kwargs={'username': self.user.username}),
                  reverse('post',
@@ -74,8 +55,6 @@ class PostURLTests(TestCase):
 
         pages = (reverse('new'),
                  reverse('index'),
-                 reverse('about-author'),
-                 reverse('about-spec'),
                  reverse('profile', kwargs={'username': self.user.username}),
                  reverse('post',
                          kwargs={'username': self.user.username,
@@ -94,8 +73,6 @@ class PostURLTests(TestCase):
 
         pages = (reverse('new'),
                  reverse('index'),
-                 reverse('about-author'),
-                 reverse('about-spec'),
                  reverse('profile', kwargs={'username': self.user.username}),
                  reverse('post',
                          kwargs={'username': self.user.username,
@@ -171,3 +148,17 @@ class PostURLTests(TestCase):
 
         response = self.guest_client.get('/pagethatnotexist/')
         self.assertEqual(response.status_code, 404)
+
+    def test_about_pages_for_non_authorized_exist(self):
+
+        """Страница "Об авторе" доступна неавторизованному пользователю."""
+
+        response = self.guest_client.get('/about/author/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_tech_pages_for_non_authorized_exist(self):
+
+        """Страница "О технологиях" доступна неавторизованному пользователю."""
+
+        response = self.guest_client.get('/about/tech/')
+        self.assertEqual(response.status_code, 200)
