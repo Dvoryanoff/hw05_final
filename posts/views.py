@@ -3,13 +3,20 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
+from django.views.generic.base import TemplateView
 
 import yatube.settings as st
 
 from .forms import CommentForm, PostForm
-from .models import Group, Post, Follow
+from .models import Follow, Group, Post
 
 User = get_user_model()
+
+
+class JustStaticPage(TemplateView):
+    # В переменной template_name обязательно указывается имя шаблона,
+    # на основе которого будет создана возвращаемая страница
+    template_name = 'newflat.html'
 
 
 # @cache_page(20)
@@ -154,7 +161,6 @@ def profile_unfollow(request, username):
     if unfollow.exists():
         unfollow.delete()
     return redirect('profile', username)
-
 
 
 def page_not_found(request, exception):  # noqa

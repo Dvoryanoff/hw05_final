@@ -4,8 +4,6 @@ import tempfile
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.flatpages.models import FlatPage
-from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
@@ -86,21 +84,6 @@ class TaskPagesTests(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user1)
 
-        site = Site.objects.get(pk=1)
-
-        self.flat_about = FlatPage.objects.create(
-            url=reverse('about-author'),
-            title='about me',
-            content='<b>some content</b>')
-
-        self.flat_spec = FlatPage.objects.create(
-            url=reverse('about-spec'),
-            title='about me',
-            content='<b>some content</b>'
-        )
-        self.flat_about.sites.add(site)
-        self.flat_spec.sites.add(site)
-
     def test_pages_uses_correct_template(self):
 
         """URL-адрес использует соответствующий шаблон."""
@@ -128,7 +111,6 @@ class TaskPagesTests(TestCase):
                          st.PAGINATOR_PAGE_SIZE)
         self.assertIn('page', response.context)
         self.assertIn('paginator', response.context)
-        # self.assertEqual(post.image, UPLOADED_GIF.name)
         self.assertTrue(post.image)
 
     def test_new_page_show_correct_context(self):
@@ -153,7 +135,6 @@ class TaskPagesTests(TestCase):
         self.assertEqual(is_slug, 'test_slug')
         self.assertEqual(is_title, 'test-group')
         self.assertEqual(is_description, 'test-description')
-        # self.assertEqual(post.image, UPLOADED_GIF.name)
         self.assertTrue(post.image)
 
     def test_post_edit_page_show_correct_context(self):
@@ -181,7 +162,6 @@ class TaskPagesTests(TestCase):
         self.assertIn('page', response.context)
         self.assertIn('paginator', response.context)
         self.assertIn('post_count', response.context)
-        # self.assertEqual(post.image, UPLOADED_GIF.name)
         self.assertTrue(post.image)
 
     def test_group_page_show_post_correct_way(self):
@@ -197,7 +177,6 @@ class TaskPagesTests(TestCase):
 
         self.assertEqual(post.pub_date, self.post.pub_date)
         self.assertEqual(post.group, self.post.group)
-        # self.assertEqual(post.image, UPLOADED_GIF.name)
         self.assertTrue(post.image)
 
     def test_post_not_go_to_wrong_group_page(self):
@@ -215,34 +194,6 @@ class TaskPagesTests(TestCase):
         fields = {str(post.group): post.group.title,
                   str(post): post.text[:15]}
         for value, expected in fields.items():
-            with self.subTest(value=value):
-                self.assertEqual(value, expected)
-
-    def test_about_author_show_correct_context(self):
-
-        """Шаблон about_author сформирован с правильным контекстом."""
-
-        response = self.guest_client.get(reverse('about-author'))
-        flat_auth_data = {
-            response.context.get('flatpage').content: self.flat_about.content,
-            response.context.get('flatpage').title: self.flat_about.title,
-            response.context.get('flatpage').url: self.flat_about.url
-        }
-        for value, expected in flat_auth_data.items():
-            with self.subTest(value=value):
-                self.assertEqual(value, expected)
-
-    def test_about_spec_show_correct_context(self):
-
-        """Шаблон about_spec сформирован с правильным контекстом."""
-
-        response = self.guest_client.get(reverse('about-spec'))
-        flat_spec_data = {
-            response.context.get('flatpage').content: self.flat_spec.content,
-            response.context.get('flatpage').title: self.flat_spec.title,
-            response.context.get('flatpage').url: self.flat_spec.url
-        }
-        for value, expected in flat_spec_data.items():
             with self.subTest(value=value):
                 self.assertEqual(value, expected)
 
