@@ -14,7 +14,7 @@ urlpatterns = [
     path('404/', page_not_found, name='404'),
     path('500/', server_error, name='500'),
     path('about/', include('about.urls', namespace='about')),
-    ]
+]
 
 handler404 = "posts.views.page_not_found"  # noqa
 handler500 = "posts.views.server_error"  # noqa

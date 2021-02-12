@@ -13,7 +13,7 @@ SMALL_GIF = (
             b'\x00\x00\x00\x2C\x00\x00\x00\x00'
             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
             b'\x0A\x00\x3B'
-            )
+)
 
 UPLOADED_GIF = SimpleUploadedFile(
     name='small.gif',
