@@ -225,10 +225,10 @@ class TaskPagesTests(TestCase):
         shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
         super().tearDownClass()
 
-    def test_authorized_can_follow_and_unfollow(self):
+    def test_authorized_can_follow(self):
 
         """Авторизованный пользователь может подписываться на других
-         пользователей и удалять их из подписок."""
+         пользователей."""
 
         Follow.objects.all().delete()
         author_follow = self.authorized_author.get(
@@ -239,6 +239,22 @@ class TaskPagesTests(TestCase):
             user=self.user_not_author, author=self.user)
 
         self.assertFalse(exist, author_follow)
+
+        not_author_follow = self.authorized_client.get(
+            reverse('profile_follow',
+                    kwargs={'username': self.user.username}))
+
+        exist = Follow.objects.filter(
+            user=self.user_not_author, author=self.user)
+
+        self.assertTrue(exist, not_author_follow)
+
+    def test_authorized_can_unfollow(self):
+
+        """Авторизованный пользователь может отписываться от других
+         пользователей."""
+
+        Follow.objects.all().delete()
 
         not_author_follow = self.authorized_client.get(
             reverse('profile_follow',

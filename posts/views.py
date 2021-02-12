@@ -46,12 +46,17 @@ def group_posts(request, slug):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     posts = author.posts.all()
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author
+    ).exists()
     post_count = posts.count()
     paginator = Paginator(posts, st.PAGINATOR_PAGE_SIZE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     context = {'author': author,
                'page': page,
+               'following': following,
+               'profile': True,
                'paginator': paginator,
                'post_count': post_count}
     return render(request, 'profile.html', context)
@@ -82,9 +87,9 @@ def new_post(request):
         new_form = form.save(commit=False)
         new_form.author = request.user
         new_form.save()
-        return redirect("index")
+        return redirect('index')
 
-    return render(request, "new.html", {"form": form})
+    return render(request, 'new.html', {'form': form})
 
 
 @login_required
@@ -135,35 +140,31 @@ def follow_index(request):
 @login_required
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
-    following = Follow.objects.filter(
-        author=author,
-        user=request.user
-    ).exists()
-    if request.user != author and not following:
-        Follow.objects.create(author=author, user=request.user)
+    if request.user != author:
+        Follow.objects.get_or_create(author=author, user=request.user)
     return redirect('profile', username)
 
 
 @login_required
 def profile_unfollow(request, username):
-    unfollow = Follow.objects.filter(
+    Follow.objects.filter(
         author__username=username, user=request.user
     )
-    if unfollow.exists():
-        unfollow.delete()
-    return redirect('profile', username)
+    if Follow.objects.filter(
+            author__username=username,
+            user=request.user).delete():
+        return redirect('profile', username)
 
 
 def page_not_found(request, exception):  # noqa
-    # Переменная exception содержит отладочную информацию,
-    # выводить её в шаблон пользователской страницы 404 мы не станем
+
     return render(
         request,
-        "misc/404.html",
-        {"path": request.path},
+        'misc/404.html',
+        {'path': request.path},
         status=404
     )
 
 
 def server_error(request):
-    return render(request, "misc/500.html", status=500)
+    return render(request, 'misc/500.html', status=500)

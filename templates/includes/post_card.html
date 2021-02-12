@@ -18,14 +18,14 @@
         <div class="d-flex justify-content-between align-items-center">
             <div class="btn-group ">
                 <div>
+                      <a class="btn btn-secondary btn-sm" href="{% url 'post' post.author.username post.id %}" role="button">Добавить комментарий</a>
                     {% if post.comments.exists %}
-                        <a class="btn btn-secondary btn-sm" href="{% url 'post' post.author.username post.id %}" role="button">Комментариев: <span class="badge badge-light"> {{ post.comments.count }}</span></a>
-<!--                        <a class="btn btn-secondary btn-sm" href="{% url 'post' post.author.username post.id %}" role="button">Добавить комментарий</a>-->
+                    <a class="btn btn-secondary btn-sm" href="{% url 'post' post.author.username post.id %}" role="button">Комментариев: <span class="badge badge-light"> {{ post.comments.count }}</span></a>
                     {% endif %}
                     {% if post.author == user %}
                         <a class="btn btn-outline-secondary btn-sm" href="{% url 'post_edit' post.author.username post.id %}" role="button">Редактировать</a>
                     {% endif %}
-                </div>
+                  </div>
             </div>
             <a href="{% url 'post' post.author post.id %}"><strong class="d-block text-gray-dark">{{ post.pub_date|date:"d M Y" }}</strong></a>
         </div>

@@ -28,10 +28,5 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('author', 'text')
     actions = ['approve_comments']
 
-    def approve_comments(self, request, queryset):
+    def approve_comments(self, request, queryset):  # noqa
         queryset.update(active=True)
-#
-#
-# admin.site.register(Post)
-# admin.site.register(Group)
-# admin.site.register(Comment)
