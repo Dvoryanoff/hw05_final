@@ -13,13 +13,13 @@ SMALL_GIF = (
             b'\x00\x00\x00\x2C\x00\x00\x00\x00'
             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
             b'\x0A\x00\x3B'
-        )
+            )
 
 UPLOADED_GIF = SimpleUploadedFile(
-            name='small.gif',
-            content=SMALL_GIF,
-            content_type='image/gif'
-        )
+    name='small.gif',
+    content=SMALL_GIF,
+    content_type='image/gif'
+)
 
 
 class PostsCreateFormTests(TestCase):
@@ -88,11 +88,12 @@ class PostsCreateFormTests(TestCase):
         }
         posts_count = Post.objects.count()
         response = self.authorized_client.post(
-                reverse('post_edit',
-                        kwargs={'username': self.user.username,
-                                'post_id': self.post_test.id}),
-                data=form_data,
-                follow=True)
+            reverse('post_edit',
+                    kwargs={'username': self.user.username,
+                            'post_id': self.post_test.id}),
+            data=form_data,
+            follow=True
+        )
         post = response.context.get('post')
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertEqual(post.text, form_data['text'])
