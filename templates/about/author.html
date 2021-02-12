@@ -18,7 +18,7 @@
               <li class="list-group-item">
                 <div class="h6 text-muted">
 
-                  Полезный короткий текст
+                  Когорта 13
                 </div>
               </li>
             </ul>
@@ -29,11 +29,11 @@
       <div class="col-md-9">
         <div class="card-body">
           <div class="card-text">
-            {% load thumbnail %}
-    {% thumbnail "img/myImage.jpg" "600" upscale=false as im %}
-    <img src="{{ im.url }}" />
-    {% endthumbnail %}
-            <p>Текст страницы "Об авторе"</p>
+                        {% load thumbnail %}
+            {% thumbnail "img/myImage1.jpg" "300" upscale=false as im %}
+            <img src="{{ im.url }}" />
+            {% endthumbnail %}
+            <p>Я начинающий студент-разработчик! "</p>
           </div>
         </div>
       </div>

@@ -65,11 +65,14 @@ class Comment(models.Model):
     class Meta:
         ordering = ['created']
 
-    def __str__(self):
-        return f'Comment {self.text} by {self.author}'
+    # def __str__(self):
+    #     return f'Comment {self.text} by {self.author}'
+    # def __str__(self):
+    #     return f'{self.text}'
 
 
 class Follow(models.Model):
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

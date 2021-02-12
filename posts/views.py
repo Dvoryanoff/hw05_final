@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
-from django.views.generic.base import TemplateView
 
 import yatube.settings as st
 
@@ -13,13 +12,6 @@ from .models import Follow, Group, Post
 User = get_user_model()
 
 
-class JustStaticPage(TemplateView):
-    # В переменной template_name обязательно указывается имя шаблона,
-    # на основе которого будет создана возвращаемая страница
-    template_name = 'newflat.html'
-
-
-# @cache_page(20)
 def index(request):
     posts = Post.objects.all()
     paginator = Paginator(posts, st.PAGINATOR_PAGE_SIZE)
@@ -65,7 +57,6 @@ def profile(request, username):
     return render(request, 'profile.html', context)
 
 
-@cache_page(20)
 def post_view(request, username, post_id):
     form = CommentForm(request.POST or None)
     author = get_object_or_404(User, username=username)

@@ -10,9 +10,9 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 import yatube.settings as st
-from posts.models import Group, Post
+from posts.models import Comment, Follow, Group, Post
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hw04_tests.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hw05_final.settings")
 
 SMALL_GIF = (
     b'\x47\x49\x46\x38\x39\x61\x02\x00'
@@ -43,7 +43,8 @@ class TaskPagesTests(TestCase):
                                        email='testauthor@mail.com',
                                        password='JimBeam1234')
 
-        cls.user1 = get_user_model().objects.create_user(username='Ivanoff')
+        cls.user_not_author = get_user_model().objects.create_user(
+            username='Ivanoff')
 
         cls.group = Group.objects.create(title='test-group',
                                          slug='test_slug',
@@ -59,22 +60,17 @@ class TaskPagesTests(TestCase):
                                        group=cls.group,
                                        image=UPLOADED_GIF)
 
-        cls.post_2 = Post.objects.create(text='test-text2',
-                                         pub_date='24.11.2020',
-                                         author=cls.user,
-                                         group=cls.group_2,
-                                         image=UPLOADED_GIF)
+        cls.followed_post_1 = Post.objects.create(text='test-text2',
+                                                  pub_date='24.11.2020',
+                                                  author=cls.user,
+                                                  group=cls.group_2,
+                                                  image=UPLOADED_GIF)
 
-        cls.post_3 = Post.objects.create(text='test-text3',
-                                         pub_date='24.11.2020',
-                                         author=cls.user1,
-                                         group=cls.group_2,
-                                         image=UPLOADED_GIF)
-
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
-        super().tearDownClass()
+        cls.followed_post_2 = Post.objects.create(text='test-text3',
+                                                  pub_date='24.11.2020',
+                                                  author=cls.user_not_author,
+                                                  group=cls.group_2,
+                                                  image=UPLOADED_GIF)
 
     def setUp(self):
 
@@ -82,13 +78,15 @@ class TaskPagesTests(TestCase):
         self.authorized_author.force_login(self.user)
         self.guest_client = Client()
         self.authorized_client = Client()
-        self.authorized_client.force_login(self.user1)
+        self.authorized_client.force_login(self.user_not_author)
 
     def test_pages_uses_correct_template(self):
 
         """URL-адрес использует соответствующий шаблон."""
 
         templates_pages_names = {
+            'about/author.html': reverse('about:author'),
+            'about/tech.html': reverse('about:tech'),
             'index.html': reverse('index'),
             'new.html': reverse('new'),
             'group.html': (reverse('group',
@@ -159,6 +157,8 @@ class TaskPagesTests(TestCase):
         post = response.context.get('paginator').get_page(1)[0]
 
         self.assertIn('author', response.context)
+
+        self.assertIn('author', response.context)
         self.assertIn('page', response.context)
         self.assertIn('paginator', response.context)
         self.assertIn('post_count', response.context)
@@ -189,7 +189,9 @@ class TaskPagesTests(TestCase):
         self.assertNotEqual(querriedPost.group, self.post.group)
 
     def test_object_name(self):
+
         """Пост появляется с правильным именем."""
+
         post = TaskPagesTests.post
         fields = {str(post.group): post.group.title,
                   str(post): post.text[:15]}
@@ -201,27 +203,73 @@ class TaskPagesTests(TestCase):
 
         """Содержимое страницы index хранится в кэше."""
 
+        response = self.authorized_client.get(reverse('index'))
+        content = response.content
+        Post.objects.all().delete()
+        response = self.authorized_client.get(reverse('index'))
+        self.assertEqual(content, response.content)
         cache.clear()
-        response = self.guest_client.get(reverse('index')).content
-        Post.objects.create(
-            text='NewPost!',
-            author=self.user1,
-        )
-        response_2 = self.guest_client.get(reverse('index')).content
-        self.assertEqual(response, response_2)
-        cache.clear()
-        response_3 = self.guest_client.get(reverse('index')).content
-        self.assertNotEqual(response_3, response)
+        response = self.authorized_client.get(reverse('index'))
+        self.assertNotEqual(content, response.content)
 
-    # def test_index_cache(self):
-    #
-    #     """Содержимое страницы index хранится в кэше."""
-    #
-    #     response = self.authorized_client.get(reverse('index'))
-    #     content = response.content
-    #     Post.objects.all().delete()
-    #     response = self.authorized_client.get(reverse('index'))
-    #     self.assertEqual(content, response.content)
-    #     cache.clear()
-    #     response = self.authorized_client.get(reverse('index'))
-    #     self.assertNotEqual(content, response.content)
+    def test_following_author(self):
+
+        """Новая запись пользователя не появляется в ленте тех,
+        кто не подписан на него."""
+
+        response = self.authorized_client.get(reverse('follow_index'))
+        self.assertEqual(len(response.context['posts']), 0)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
+    def test_authorized_can_follow_and_unfollow(self):
+
+        """Авторизованный пользователь может подписываться на других
+         пользователей и удалять их из подписок."""
+
+        Follow.objects.all().delete()
+        author_follow = self.authorized_author.get(
+            reverse('profile_follow',
+                    kwargs={'username': self.user_not_author.username}))
+
+        exist = Follow.objects.filter(
+            user=self.user_not_author, author=self.user)
+
+        self.assertFalse(exist, author_follow)
+
+        not_author_follow = self.authorized_client.get(
+            reverse('profile_follow',
+                    kwargs={'username': self.user.username}))
+
+        exist = Follow.objects.filter(
+            user=self.user_not_author, author=self.user)
+
+        self.assertTrue(exist, not_author_follow)
+
+        not_author_unfollow = self.authorized_client.get(
+            reverse('profile_unfollow',
+                    kwargs={'username': self.user.username}))
+
+        exist = Follow.objects.filter(
+            user=self.user_not_author, author=self.user)
+
+        self.assertFalse(exist, not_author_unfollow)
+
+    def test_authorized_can_write_comment(self):
+
+        """Авторизованный пользователь может писать комментарии"""
+
+        comments_count = Comment.objects.count()
+
+        new_comment = (Comment.objects.create(
+            post=self.post,
+            author=self.user_not_author, text='Ваш пост-говно!')).text
+
+        response2 = self.authorized_client.get(
+            reverse('post', args=[self.user, self.post.id]))
+        get_comment = response2.context['comments'][0].text
+        self.assertEqual(Comment.objects.count(), comments_count + 1)
+        self.assertEqual(get_comment, new_comment)

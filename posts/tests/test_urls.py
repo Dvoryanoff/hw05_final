@@ -162,3 +162,18 @@ class PostURLTests(TestCase):
 
         response = self.guest_client.get('/about/tech/')
         self.assertEqual(response.status_code, 200)
+
+    def test_authorized_can_follow_and_unfollow(self):
+
+        """Авторизованный пользователь может подписываться на других
+        пользователей и удалять их из подписок."""
+
+        pages = {
+            reverse('profile_follow',
+                    kwargs={'username': self.user.username}),
+            reverse('profile_unfollow',
+                    kwargs={'username': self.user.username})}
+        for url in pages:
+            with self.subTest(url=url):
+                response = self.authorized_client.get(url)
+                self.assertEqual(response.status_code, 302, f'url: {url}')
