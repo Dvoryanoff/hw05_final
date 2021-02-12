@@ -282,7 +282,7 @@ class TaskPagesTests(TestCase):
 
         new_comment = (Comment.objects.create(
             post=self.post,
-            author=self.user_not_author, text='Ваш пост-говно!')).text
+            author=self.user_not_author, text='Ваш пост-не ахти!')).text
 
         response2 = self.authorized_client.get(
             reverse('post', args=[self.user, self.post.id]))

@@ -148,12 +148,9 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     Follow.objects.filter(
-        author__username=username, user=request.user
-    )
-    if Follow.objects.filter(
-            author__username=username,
-            user=request.user).delete():
-        return redirect('profile', username)
+        author__username=username,
+        user=request.user).delete()
+    return redirect('profile', username)
 
 
 def page_not_found(request, exception):  # noqa
