@@ -44,8 +44,7 @@ class PostModelTest(TestCase):
         post = PostModelTest.post
 
         fields_help_texts = {
-            'text': 'Здесь следует ввести текст поста',
-            'group': 'Выберите группу'
+            'text': 'Здесь следует ввести текст не более 2000 знаков'
         }
         for value, expected in fields_help_texts.items():
             with self.subTest(value=value):
@@ -56,7 +55,7 @@ class PostModelTest(TestCase):
         post = PostModelTest.post
         expected_object_name = post.text[:15]
         self.assertEquals(expected_object_name, str(post),
-                          'объект Group не соответствует полю Text '
+                          'объект Post не соответствует полю Text '
                           'или больше 15 символов')
 
 

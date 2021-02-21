@@ -5,7 +5,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
 import yatube.settings as st
-
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post
 
@@ -29,7 +28,7 @@ def index(request):
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    posts = group.posts_group.all()
+    posts = group.posts.all()
     paginator = Paginator(posts, st.PAGINATOR_PAGE_SIZE)
 
     page_number = request.GET.get('page')
@@ -38,11 +37,11 @@ def group_posts(request, slug):
     return render(
         request,
         'group.html',
-        {'group': group, 'page': page, 'paginator': paginator}
+        {'group': group, 'page': page, 'paginator': paginator, 'posts': posts}
     )
 
 
-@cache_page(20)
+# @cache_page(20)
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     posts = author.posts.all()
@@ -74,9 +73,16 @@ def post_view(request, username, post_id):
         'post': post,
         'author': author,
         'form': form,
+        'post_view': True,
         'comments': comments
     }
     return render(request, 'post.html', context)
+
+
+def delete_post(request, post_id=None):
+    post_to_delete = Post.objects.get(id=post_id)
+    post_to_delete.delete()
+    return redirect('profile', post_to_delete.author)
 
 
 @login_required

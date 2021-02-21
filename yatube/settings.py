@@ -24,12 +24,12 @@ SECRET_KEY = ')e#ui6&gzyj)-$xrc$b4ps#(ffy%xziw8i^h!=m^p85b!86o05'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "[::1]",
-    "testserver",
+    '*',
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    'testserver',
 ]
 
 # Application definition
@@ -45,13 +45,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'django.contrib.sites',
     'django.contrib.flatpages'
 ]
 
 SITE_ID = 1
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

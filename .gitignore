@@ -27,3 +27,5 @@ coverage.xml
 db.sqlite3
 /sent_emails/
 /media/
+
+/.env

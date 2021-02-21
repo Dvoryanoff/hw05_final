@@ -29,7 +29,8 @@ class Post(models.Model):
 
     text = models.TextField(
         verbose_name='Текст',
-        help_text='Здесь следует ввести текст поста')
+        help_text='Здесь следует ввести текст не более 2000 знаков',
+        max_length=2000)
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='posts')
@@ -37,9 +38,14 @@ class Post(models.Model):
                               verbose_name='Группа',
                               help_text='Выберите группу',
                               on_delete=models.SET_NULL,
-                              related_name='posts_group', blank=True,
+                              related_name='posts', blank=True,
                               null=True)
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
+
+    @property
+    def short_text(self):
+        if len(self.text.__str__()) > 100:
+            return f'{self.text[:97]}...'
 
     class Meta:
         ordering = ['-pub_date']
